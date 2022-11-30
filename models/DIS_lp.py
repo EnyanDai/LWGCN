@@ -5,10 +5,6 @@ import torch.nn.functional as F
 import torch.optim as optim
 import utils
 from copy import deepcopy
-from torch_geometric.nn import GCNConv,JumpingKnowledge
-import numpy as np
-import scipy.sparse as sp
-from torch_geometric.utils import from_scipy_sparse_matrix
 
 class DISConv(nn.Module):
     def __init__(self):

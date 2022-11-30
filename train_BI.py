@@ -68,29 +68,13 @@ if args.dataset in ["crocodile", "squirrel",'chameleon']:
         dataset = WikipediaNetwork('./data/',name=args.dataset)
     data = dataset[0].to(device)
 
-if args.dataset in ["Penn94","arxiv-year","twitch-gamer"]:
-    from dataset import load_nc_dataset,load_fixed_splits
-    from models.DIS_lp import DIS
-    dataset = load_nc_dataset("fb100",args.dataset)
-    split_idx_lst = load_fixed_splits("fb100", args.dataset)
-
-    train_mask = torch.stack([split["train"] for split in split_idx_lst],dim=1)
-    val_mask = torch.stack([split["valid"] for split in split_idx_lst],dim=1)
-    test_mask = torch.stack([split["test"] for split in split_idx_lst],dim=1)
-    from torch_geometric.data import Data
-    data = Data(x=dataset.graph["node_feat"],y=dataset.label.long(),edge_index=dataset.graph["edge_index"],\
-                train_mask=train_mask,val_mask=val_mask,test_mask=test_mask).to(device)
-
 from utils import sys_normalized_adjacency,sparse_mx_to_torch_sparse_tensor
 from torch_geometric.utils import to_dense_adj, to_scipy_sparse_matrix
 import scipy.sparse as sp
 adj = sys_normalized_adjacency(to_scipy_sparse_matrix(data.edge_index, num_nodes=len(data.x)))
 adj = sparse_mx_to_torch_sparse_tensor(adj).to(device)
 #%%
-from torch_scatter import scatter
 from torch_geometric.utils import to_dense_adj
-from scipy.sparse import csr_matrix
-# data.edge_index = to_undirected(data.edge_index)
 results = []
 Bilevel_results = []
 for i in range(data.train_mask.shape[1]):
@@ -120,10 +104,7 @@ for i in range(data.train_mask.shape[1]):
     #%%
     pred = model(data.x).max(dim=1)[1]
     pred[train_mask] = data.y[train_mask].long()
-    # pred[test_mask]=data.y[test_mask].long()
     edge_label_wise = []
-
-    # degree = dense_adj.sum(dim=1)
     
     for label in range(int(data.y.max())+1):
         mask = (pred==label)
@@ -139,12 +120,16 @@ for i in range(data.train_mask.shape[1]):
         dense_adj = sparse_mx_to_torch_sparse_tensor(dense_adj).to(device)
         edge_label_wise.append(dense_adj)
     
+    if args.dataset in args.dataset in ['Cora', 'Citeseer', 'Pubmed']:
+        layer = 2
+    else:
+        layer = args.layer
     dis_model = DIS(nfeat=data.x.shape[1],\
                 nhid=args.hidden,\
                 nclass= int(data.y.max()+1),\
                 dropout=args.dropout,\
                 lr=args.lr,\
-                layer=args.layer,\
+                layer=layer,\
                 weight_decay=args.weight_decay,\
                 device=device, k=len(edge_label_wise)).to(device)
     

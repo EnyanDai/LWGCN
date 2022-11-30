@@ -3,12 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from deeprobust.graph import utils
+import utils
 from copy import deepcopy
-from torch_geometric.nn import GCNConv
-import numpy as np
-import scipy.sparse as sp
-from torch_geometric.utils import from_scipy_sparse_matrix
 
 
 class MLP(nn.Module):

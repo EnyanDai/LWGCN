@@ -38,7 +38,7 @@ print(args)
 from torch_geometric.utils import to_undirected
 import torch_geometric.transforms as T
 # from torch_geometric.datasets import WebKB
-from torch_geometric.datasets import WikipediaNetwork,WebKB,Planetoid
+from torch_geometric.datasets import WebKB,Planetoid
 transform = T.Compose([T.NormalizeFeatures()])
 
 if args.dataset in ['Cora', 'Citeseer', 'Pubmed']:
@@ -56,17 +56,16 @@ if args.dataset in ["Texas", "Wisconsin","Cornell"]:
 
 if args.dataset in ["crocodile", "squirrel",'chameleon']:
     from models.DIS_lp import DIS
+    from dataset import WikipediaNetwork
     if args.dataset=="crocodile":
         dataset = WikipediaNetwork('./data/',name=args.dataset,geom_gcn_preprocess=False)
     else:
         dataset = WikipediaNetwork('./data/',name=args.dataset)
     data = dataset[0].to(device)
 #%%
-from torch_scatter import scatter
-from torch_geometric.utils import to_dense_adj
-from scipy.sparse import csr_matrix
+
 from utils import sparse_mx_to_torch_sparse_tensor
-# data.edge_index = to_undirected(data.edge_index)
+from torch_geometric.utils import to_scipy_sparse_matrix
 
 results = []
 dis_results = []
@@ -79,12 +78,17 @@ for i in range(data.train_mask.shape[1]):
     torch.manual_seed(args.seed)
 
     #%%
+    if args.dataset == "arxiv-year":
+        weight_deacy = 0.0
+    else:
+        weight_deacy = 5e-4
+
     model = MLP(nfeat=data.x.shape[1],\
                 nhid=args.hidden,\
                 nclass= int(data.y.max()+1),\
                 dropout=args.dropout,\
                 lr=0.01,\
-                weight_decay=5e-4,\
+                weight_decay=weight_deacy,\
                 device=device).to(device)
 
     #%%
@@ -104,12 +108,13 @@ for i in range(data.train_mask.shape[1]):
         sub_adj = data.edge_index[:,mask[data.edge_index[1]]]
         if sub_adj.shape[1]<=0:
             continue
-        dense_adj = to_dense_adj(sub_adj, max_num_nodes=len(data.x))[0]
-        degree = dense_adj.sum(dim=1)
-        degree[degree==0]=1
-        norm = torch.diag(1/degree)
-        dense_adj = norm @ dense_adj 
-        dense_adj = sparse_mx_to_torch_sparse_tensor(csr_matrix(dense_adj.cpu().numpy())).to(device)
+        dense_adj = to_scipy_sparse_matrix(sub_adj, num_nodes=len(data.x))
+        rowsum = np.array(dense_adj.sum(1))
+        r_inv = np.power(rowsum, -1).flatten()
+        r_inv[np.isinf(r_inv)] = 0.
+        r_mat_inv = sp.diags(r_inv)
+        dense_adj = r_mat_inv.dot(dense_adj)
+        dense_adj = sparse_mx_to_torch_sparse_tensor(dense_adj).to(device)
         edge_label_wise.append(dense_adj)
 
     dis_model = DIS(nfeat=data.x.shape[1],\
