@@ -124,6 +124,7 @@ for i in range(data.train_mask.shape[1]):
         layer = 2
     else:
         layer = args.layer
+
     dis_model = DIS(nfeat=data.x.shape[1],\
                 nhid=args.hidden,\
                 nclass= int(data.y.max()+1),\
@@ -133,10 +134,15 @@ for i in range(data.train_mask.shape[1]):
                 weight_decay=args.weight_decay,\
                 device=device, k=len(edge_label_wise)).to(device)
     
+    if args.dataset in args.dataset in ['Cora', 'Citeseer', 'Pubmed']:
+        layer = args.layer
+    else:
+        layer = 2
+
     model = GCN2(data.x.shape[1], \
                 nhidden=args.hidden,\
                 nclass=int(data.y.max()+1),\
-                nlayers=args.layer,\
+                nlayers=layer,\
                 alpha=args.alpha,\
                 lamda=args.lamda,\
                 dropout=args.dropout, device=device).to(device)

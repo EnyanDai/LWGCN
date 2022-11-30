@@ -62,11 +62,17 @@ if args.dataset in ["crocodile", "squirrel",'chameleon']:
     else:
         dataset = WikipediaNetwork('./data/',name=args.dataset)
     data = dataset[0].to(device)
+
+if args.dataset == "arxiv-year":
+    from models.DIS_texas import DIS
+    from dataset import load_arxiv_year_dataset
+    data = load_arxiv_year_dataset('./data/').to(device)
+
 #%%
 
 from utils import sparse_mx_to_torch_sparse_tensor
 from torch_geometric.utils import to_scipy_sparse_matrix
-
+import scipy.sparse as sp
 results = []
 dis_results = []
 for i in range(data.train_mask.shape[1]):
