@@ -5,7 +5,8 @@ import numpy as np
 import torch
 from models.MLP import MLP
 from models.GCN2 import GCN2
-
+import warnings
+warnings.filterwarnings('ignore')
 from models.Bilevel import BilevelTrainer
 from torch_geometric.datasets import Planetoid, WebKB
 from dataset import WikipediaNetwork
@@ -17,10 +18,10 @@ parser.add_argument('--debug', action='store_true',
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
-parser.add_argument('--lr', type=float, default=0.003,
+parser.add_argument('--lr', type=float, default=0.01,
                     help='Initial learning rate.')
-parser.add_argument('--dataset', type=str, default='Cora', help='Random seed.')
-parser.add_argument('--weight_decay', type=float, default=5e-4,
+parser.add_argument('--dataset', type=str, default='Penn94', help='Random seed.')
+parser.add_argument('--weight_decay', type=float, default=0,
                     help='Weight decay (L2 loss on parameters).')
 parser.add_argument('--hidden', type=int, default=64,
                     help='Number of hidden units.')
@@ -54,7 +55,7 @@ if args.dataset in ['Cora', 'Citeseer', 'Pubmed']:
     data.val_mask = torch.unsqueeze(data.val_mask, dim=1)
     data.test_mask = torch.unsqueeze(data.test_mask, dim=1)
 
-if args.dataset in ["Texas", "Wisconsin"]:
+if args.dataset in ["Texas", "Wisconsin",'Cornell']:
     from models.DIS_texas import DIS
     dataset = WebKB(root='./data/',name=args.dataset)
     data = dataset[0].to(device)
@@ -67,10 +68,23 @@ if args.dataset in ["crocodile", "squirrel",'chameleon']:
         dataset = WikipediaNetwork('./data/',name=args.dataset)
     data = dataset[0].to(device)
 
+if args.dataset in ["Penn94","arxiv-year","twitch-gamer"]:
+    from dataset import load_nc_dataset,load_fixed_splits
+    from models.DIS_lp import DIS
+    dataset = load_nc_dataset("fb100",args.dataset)
+    split_idx_lst = load_fixed_splits("fb100", args.dataset)
+
+    train_mask = torch.stack([split["train"] for split in split_idx_lst],dim=1)
+    val_mask = torch.stack([split["valid"] for split in split_idx_lst],dim=1)
+    test_mask = torch.stack([split["test"] for split in split_idx_lst],dim=1)
+    from torch_geometric.data import Data
+    data = Data(x=dataset.graph["node_feat"],y=dataset.label.long(),edge_index=dataset.graph["edge_index"],\
+                train_mask=train_mask,val_mask=val_mask,test_mask=test_mask).to(device)
 
 from utils import sys_normalized_adjacency,sparse_mx_to_torch_sparse_tensor
-from torch_geometric.utils import to_dense_adj
-adj = sys_normalized_adjacency(to_dense_adj(data.edge_index)[0].cpu().numpy())
+from torch_geometric.utils import to_dense_adj, to_scipy_sparse_matrix
+import scipy.sparse as sp
+adj = sys_normalized_adjacency(to_scipy_sparse_matrix(data.edge_index, num_nodes=len(data.x)))
 adj = sparse_mx_to_torch_sparse_tensor(adj).to(device)
 #%%
 from torch_scatter import scatter
@@ -98,15 +112,15 @@ for i in range(data.train_mask.shape[1]):
 
     #%%
     model.fit(data.x, data.y, train_mask, val_mask,train_iters=args.epochs)
-    # print('======MLP=====')
+    print('======MLP=====')
     result = model.test(test_mask)
-    # print(result)
+    print(result)
     results.append(result)
 
     #%%
     pred = model(data.x).max(dim=1)[1]
     pred[train_mask] = data.y[train_mask].long()
-    pred[test_mask]=data.y[test_mask].long()
+    # pred[test_mask]=data.y[test_mask].long()
     edge_label_wise = []
 
     # degree = dense_adj.sum(dim=1)
@@ -116,12 +130,13 @@ for i in range(data.train_mask.shape[1]):
         sub_adj = data.edge_index[:,mask[data.edge_index[1]]]
         if sub_adj.shape[1]<=0:
             continue
-        dense_adj = to_dense_adj(sub_adj, max_num_nodes=len(data.x))[0]
-        degree = dense_adj.sum(dim=1)
-        degree[degree==0]=1
-        norm = torch.diag(1/degree)
-        dense_adj = norm @dense_adj
-        dense_adj = sparse_mx_to_torch_sparse_tensor(csr_matrix(dense_adj.cpu().numpy())).to(device)
+        dense_adj = to_scipy_sparse_matrix(sub_adj, num_nodes=len(data.x))
+        rowsum = np.array(dense_adj.sum(1))
+        r_inv = np.power(rowsum, -1).flatten()
+        r_inv[np.isinf(r_inv)] = 0.
+        r_mat_inv = sp.diags(r_inv)
+        dense_adj = r_mat_inv.dot(dense_adj)
+        dense_adj = sparse_mx_to_torch_sparse_tensor(dense_adj).to(device)
         edge_label_wise.append(dense_adj)
     
     dis_model = DIS(nfeat=data.x.shape[1],\
@@ -129,7 +144,7 @@ for i in range(data.train_mask.shape[1]):
                 nclass= int(data.y.max()+1),\
                 dropout=args.dropout,\
                 lr=args.lr,\
-                layer=2,\
+                layer=args.layer,\
                 weight_decay=args.weight_decay,\
                 device=device, k=len(edge_label_wise)).to(device)
     
@@ -149,10 +164,9 @@ for i in range(data.train_mask.shape[1]):
                     weight_decay=args.weight_decay,\
                     device=device)
     bilevel.fit(data.x, edge_label_wise, adj, data.y, train_mask, val_mask,\
-                inner_iters=1, train_iters=args.epochs)
+                inner_iters=1, train_iters=args.epochs,verbose=False)
     print('======{}th split====='.format(i+1))
     result = bilevel.test(test_mask)
-    print("Test set results: accuracy= {:.4f}".format(result))
     Bilevel_results.append(result)
 
 print("Aveage: {:.4f}, std: {:.4f}".format(np.mean(Bilevel_results),np.std(Bilevel_results)))

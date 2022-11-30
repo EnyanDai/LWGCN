@@ -2,8 +2,6 @@ import torch
 import torch.nn.functional as F
 import utils
 
-from models.DIS_lp import DIS
-from models.GCN import GCN
 import torch.optim as optim
 from copy import deepcopy
 class BilevelTrainer:
@@ -76,8 +74,8 @@ class BilevelTrainer:
                 print('Epoch {}, training loss: {}'.format(i, loss.item()))
                 acc_ours = utils.accuracy(pred_ours[idx_val], labels[idx_val])
                 acc_gcn = utils.accuracy(pred_gcn[idx_val], labels[idx_val])
-                print(self.weight)
-                print("acc_val: {:.4f}, ours: {:.4f}, gcn: {:.4f}".format(acc_val, acc_ours, acc_gcn))
+                # print(self.weight)
+                # print("acc_val: {:.4f}, ours: {:.4f}, gcn: {:.4f}".format(acc_val, acc_ours, acc_gcn))
             if acc_val > best_acc_val:
                 best_acc_val = acc_val
                 self.output = deepcopy(final_pred.detach())
@@ -92,7 +90,7 @@ class BilevelTrainer:
             node testing indices
         """
         acc_test = utils.accuracy(self.output[idx_test], self.labels[idx_test])
-        # print("Test set results:",
-        #       "accuracy= {:.4f}".format(acc_test.item()))
+        print("Test set results:",
+              "accuracy= {:.4f}".format(acc_test.item()))
         # print(float(F.softmax(self.best_weight.detach())[0]))
         return float(acc_test)

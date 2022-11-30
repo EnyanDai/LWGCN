@@ -6,7 +6,23 @@ import torch.optim as optim
 import utils
 from copy import deepcopy
 from torch_geometric.nn import JumpingKnowledge
-from models.DIS_lp import DISConv
+class DISConv(nn.Module):
+    def __init__(self):
+
+        super(DISConv, self).__init__()
+
+    def forward(self, x, edge_label_wise):
+        h = []
+        # x = self.linear(x)
+        for edge_index in edge_label_wise:
+            if edge_index.is_sparse:
+                h.append(torch.spmm(edge_index, x))
+            else:
+                h.append(edge_index@x)
+        h.append(x)
+        
+        h = torch.cat(h, dim=1)
+        return h
 
 
 
@@ -143,7 +159,7 @@ class DIS(nn.Module):
         output = self.forward(self.features, self.edge_label_wise)
         loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
         acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
-        # print("Test set results:",
-        #       "loss= {:.4f}".format(loss_test.item()),
-        #       "accuracy= {:.4f}".format(acc_test.item()))
+        print("Test set results:",
+              "loss= {:.4f}".format(loss_test.item()),
+              "accuracy= {:.4f}".format(acc_test.item()))
         return float(acc_test)

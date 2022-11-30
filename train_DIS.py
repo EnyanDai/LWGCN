@@ -3,7 +3,8 @@ import argparse
 import numpy as np
 import torch
 from models.MLP import MLP
-
+import warnings
+warnings.filterwarnings('ignore')
 from torch_geometric.datasets import Planetoid, WebKB
 
 # Training settings
@@ -13,17 +14,17 @@ parser.add_argument('--debug', action='store_true',
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
-parser.add_argument('--lr', type=float, default=0.01,
+parser.add_argument('--lr', type=float, default=0.003,
                     help='Initial learning rate.')
-parser.add_argument('--weight_decay', type=float, default=5e-4,
+parser.add_argument('--weight_decay', type=float, default=0.005,
                     help='Weight decay (L2 loss on parameters).')
-parser.add_argument('--hidden', type=int, default=64,
+parser.add_argument('--hidden', type=int, default=128,
                     help='Number of hidden units.')
-parser.add_argument('--dropout', type=float, default=0.0,
+parser.add_argument('--dropout', type=float, default=0.65,
                     help='Dropout rate (1 - keep probability).')
 parser.add_argument('--epochs', type=int,  default=400, help='Number of epochs to train.')
 parser.add_argument("--layer", type=int, default=2)
-parser.add_argument('--dataset', type=str, default='squirrel', help='Random seed.')
+parser.add_argument('--dataset', type=str, default='Cornell', help='Random seed.')
 args = parser.parse_known_args()[0]
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 device = torch.device("cuda" if args.cuda else "cpu")
@@ -88,15 +89,14 @@ for i in range(data.train_mask.shape[1]):
 
     #%%
     model.fit(data.x, data.y, train_mask, val_mask,train_iters=args.epochs)
-    # print('======MLP=====')
+    print('======MLP=====')
     result = model.test(test_mask)
-    # print(result)
+    print(result)
     results.append(result)
 
     #%%
     pred = model(data.x).max(dim=1)[1]
     pred[train_mask] = data.y[train_mask].long()
-    pred[test_mask]=data.y[test_mask].long()
     edge_label_wise = []
     
     for label in range(int(data.y.max())+1):
@@ -108,7 +108,6 @@ for i in range(data.train_mask.shape[1]):
         degree = dense_adj.sum(dim=1)
         degree[degree==0]=1
         norm = torch.diag(1/degree)
-        # dense_adj = dense_adj@norm
         dense_adj = norm @ dense_adj 
         dense_adj = sparse_mx_to_torch_sparse_tensor(csr_matrix(dense_adj.cpu().numpy())).to(device)
         edge_label_wise.append(dense_adj)
