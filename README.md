@@ -40,4 +40,4 @@ bash train_BI.sh
 bash train_DIS.sh
 ```
 
-You can also check the our recorded log in `.\log\results.log` to help reproduce the experiments we conducted.
+You can also check the our recorded log in `.\log` to help reproduce the experiments we conducted.

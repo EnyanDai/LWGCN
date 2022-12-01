@@ -1,0 +1,168 @@
+Namespace(alpha=0.1, cuda=True, dataset='Texas', debug=False, dropout=0.6, epochs=400, hidden=128, lamda=0.5, layer=2, lr=0.01, no_cuda=False, seed=15, weight_decay=0.005)
+======1th split=====
+Test set results: accuracy= 0.8919
+======2th split=====
+Test set results: accuracy= 0.8919
+======3th split=====
+Test set results: accuracy= 0.8378
+======4th split=====
+Test set results: accuracy= 0.8919
+======5th split=====
+Test set results: accuracy= 0.8649
+======6th split=====
+Test set results: accuracy= 0.8919
+======7th split=====
+Test set results: accuracy= 0.8108
+======8th split=====
+Test set results: accuracy= 0.8649
+======9th split=====
+Test set results: accuracy= 0.8649
+======10th split=====
+Test set results: accuracy= 0.8108
+Aveage: 0.8622, std: 0.0307
+Namespace(alpha=0.1, cuda=True, dataset='Wisconsin', debug=False, dropout=0.6, epochs=400, hidden=128, lamda=0.5, layer=2, lr=0.01, no_cuda=False, seed=15, weight_decay=0.005)
+======1th split=====
+Test set results: accuracy= 0.8627
+======2th split=====
+Test set results: accuracy= 0.9216
+======3th split=====
+Test set results: accuracy= 0.9216
+======4th split=====
+Test set results: accuracy= 0.9020
+======5th split=====
+Test set results: accuracy= 0.8824
+======6th split=====
+Test set results: accuracy= 0.9216
+======7th split=====
+Test set results: accuracy= 0.8627
+======8th split=====
+Test set results: accuracy= 0.8039
+======9th split=====
+Test set results: accuracy= 0.8039
+======10th split=====
+Test set results: accuracy= 0.8627
+Aveage: 0.8745, std: 0.0422
+Namespace(alpha=0.1, cuda=True, dataset='Cornell', debug=False, dropout=0.65, epochs=400, hidden=32, lamda=0.5, layer=4, lr=0.01, no_cuda=False, seed=15, weight_decay=0.005)
+======1th split=====
+Test set results: accuracy= 0.7568
+======2th split=====
+Test set results: accuracy= 0.8108
+======3th split=====
+Test set results: accuracy= 0.9459
+======4th split=====
+Test set results: accuracy= 0.7838
+======5th split=====
+Test set results: accuracy= 0.9189
+======6th split=====
+Test set results: accuracy= 0.8378
+======7th split=====
+Test set results: accuracy= 0.8108
+======8th split=====
+Test set results: accuracy= 0.8108
+======9th split=====
+Test set results: accuracy= 0.8108
+======10th split=====
+Test set results: accuracy= 0.8378
+Aveage: 0.8324, std: 0.0551
+Namespace(alpha=0.1, cuda=True, dataset='chameleon', debug=False, dropout=0.0, epochs=400, hidden=64, lamda=0.5, layer=2, lr=0.003, no_cuda=False, seed=15, weight_decay=0.0005)
+======1th split=====
+Test set results: accuracy= 0.7237
+======2th split=====
+Test set results: accuracy= 0.7346
+======3th split=====
+Test set results: accuracy= 0.7171
+======4th split=====
+Test set results: accuracy= 0.7434
+======5th split=====
+Test set results: accuracy= 0.7610
+======6th split=====
+Test set results: accuracy= 0.7281
+======7th split=====
+Test set results: accuracy= 0.7478
+======8th split=====
+Test set results: accuracy= 0.7412
+======9th split=====
+Test set results: accuracy= 0.7215
+======10th split=====
+Test set results: accuracy= 0.7346
+Aveage: 0.7353, std: 0.0128
+Namespace(alpha=0.1, cuda=True, dataset='squirrel', debug=False, dropout=0.0, epochs=400, hidden=256, lamda=0.5, layer=2, lr=0.003, no_cuda=False, seed=15, weight_decay=0.0005)
+======1th split=====
+Test set results: accuracy= 0.6110
+======2th split=====
+Test set results: accuracy= 0.6263
+======3th split=====
+Test set results: accuracy= 0.6033
+======4th split=====
+Test set results: accuracy= 0.6398
+======5th split=====
+Test set results: accuracy= 0.6321
+======6th split=====
+Test set results: accuracy= 0.6263
+======7th split=====
+Test set results: accuracy= 0.6052
+======8th split=====
+Test set results: accuracy= 0.6321
+======9th split=====
+Test set results: accuracy= 0.5908
+======10th split=====
+Test set results: accuracy= 0.6263
+Aveage: 0.6193, std: 0.0149
+Namespace(alpha=0.1, cuda=True, dataset='crocodile', debug=False, dropout=0.0, epochs=400, hidden=256, lamda=0.5, layer=3, lr=0.003, no_cuda=False, seed=15, weight_decay=0.0005)
+======1th split=====
+Test set results: accuracy= 0.7872
+======2th split=====
+Test set results: accuracy= 0.7992
+======3th split=====
+Test set results: accuracy= 0.7928
+======4th split=====
+Test set results: accuracy= 0.7919
+======5th split=====
+Test set results: accuracy= 0.7958
+======6th split=====
+Test set results: accuracy= 0.8048
+======7th split=====
+Test set results: accuracy= 0.7898
+======8th split=====
+Test set results: accuracy= 0.8031
+======9th split=====
+Test set results: accuracy= 0.7949
+======10th split=====
+Test set results: accuracy= 0.7997
+Aveage: 0.7959, std: 0.0054
+Namespace(alpha=0.1, cuda=True, dataset='Cora', debug=False, dropout=0.6, epochs=400, hidden=64, lamda=0.5, layer=64, lr=0.01, no_cuda=False, seed=10, weight_decay=0.0001)
+======1th split=====
+Test set results: accuracy= 0.8460
+Aveage: 0.8460, std: 0.0000
+Namespace(alpha=0.1, cuda=True, dataset='Cora', debug=False, dropout=0.6, epochs=400, hidden=64, lamda=0.5, layer=64, lr=0.01, no_cuda=False, seed=11, weight_decay=0.0001)
+======1th split=====
+Test set results: accuracy= 0.8450
+Aveage: 0.8450, std: 0.0000
+Namespace(alpha=0.1, cuda=True, dataset='Cora', debug=False, dropout=0.6, epochs=400, hidden=64, lamda=0.5, layer=64, lr=0.01, no_cuda=False, seed=12, weight_decay=0.0001)
+======1th split=====
+Test set results: accuracy= 0.8280
+Aveage: 0.8280, std: 0.0000
+Namespace(alpha=0.1, cuda=True, dataset='Citeseer', debug=False, dropout=0.7, epochs=400, hidden=256, lamda=0.6, layer=32, lr=0.01, no_cuda=False, seed=10, weight_decay=0.0005)
+======1th split=====
+Test set results: accuracy= 0.7890
+Aveage: 0.7890, std: 0.0000
+Namespace(alpha=0.1, cuda=True, dataset='Citeseer', debug=False, dropout=0.7, epochs=400, hidden=256, lamda=0.6, layer=32, lr=0.01, no_cuda=False, seed=11, weight_decay=0.0005)
+======1th split=====
+Test set results: accuracy= 0.7810
+Aveage: 0.7810, std: 0.0000
+Namespace(alpha=0.1, cuda=True, dataset='Citeseer', debug=False, dropout=0.7, epochs=400, hidden=256, lamda=0.6, layer=32, lr=0.01, no_cuda=False, seed=12, weight_decay=0.0005)
+======1th split=====
+Test set results: accuracy= 0.7360
+Aveage: 0.7360, std: 0.0000
+Namespace(alpha=0.1, cuda=True, dataset='Pubmed', debug=False, dropout=0.5, epochs=400, hidden=256, lamda=0.4, layer=16, lr=0.01, no_cuda=False, seed=10, weight_decay=0.0005)
+======1th split=====
+Test set results: accuracy= 0.8080
+Aveage: 0.8080, std: 0.0000
+Namespace(alpha=0.1, cuda=True, dataset='Pubmed', debug=False, dropout=0.5, epochs=400, hidden=256, lamda=0.4, layer=16, lr=0.01, no_cuda=False, seed=11, weight_decay=0.0005)
+======1th split=====
+Test set results: accuracy= 0.7960
+Aveage: 0.7960, std: 0.0000
+Namespace(alpha=0.1, cuda=True, dataset='Pubmed', debug=False, dropout=0.5, epochs=400, hidden=256, lamda=0.4, layer=16, lr=0.01, no_cuda=False, seed=12, weight_decay=0.0005)
+======1th split=====
+Test set results: accuracy= 0.8050
+Aveage: 0.8050, std: 0.0000

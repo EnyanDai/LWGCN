@@ -96,9 +96,9 @@ for i in range(data.train_mask.shape[1]):
 
     #%%
     model.fit(data.x, data.y, train_mask, val_mask,train_iters=args.epochs)
-    print('======MLP=====')
+    # print('======MLP=====')
     result = model.test(test_mask)
-    print(result)
+    # print(result)
     results.append(result)
 
     #%%
@@ -134,7 +134,7 @@ for i in range(data.train_mask.shape[1]):
                 weight_decay=args.weight_decay,\
                 device=device, k=len(edge_label_wise)).to(device)
     
-    if args.dataset in args.dataset in ['Cora', 'Citeseer', 'Pubmed']:
+    if args.dataset in args.dataset in ['Cora', 'Citeseer', 'Pubmed',"Cornell"]:
         layer = args.layer
     else:
         layer = 2
