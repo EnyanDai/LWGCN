@@ -19,7 +19,7 @@ torch-geometric==1.7.2
 cuda=11.0
 ```
 
-## Install Packages
+### Install Packages
 
 ```
 conda install pytorch==1.7.1 torchvision==0.8.2 torchaudio==0.7.2 cudatoolkit=11.0 -c pytorch 
@@ -41,3 +41,16 @@ bash train_DIS.sh
 ```
 
 You can also check the our recorded log in `.\log` to help reproduce the experiments we conducted.
+
+## Cite
+If you find this repo to be useful, please cite our paper. Thank you.
+```
+@inproceedings{
+dai2022labelwise,
+title={Label-Wise Graph Convolutional Network for Heterophilic Graphs},
+author={Enyan Dai and Shijie Zhou and Zhimeng Guo and Suhang Wang},
+booktitle={Learning on Graphs Conference},
+year={2022},
+url={https://openreview.net/forum?id=HRmby7yVVuF}
+}
+```
